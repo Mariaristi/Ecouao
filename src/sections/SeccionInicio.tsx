@@ -51,33 +51,7 @@ export default function SeccionInicio({ latest, nodeStatus }: SeccionInicioProps
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-3">
-        <Tarjeta className="lg:col-span-2">
-          <h3 className="text-base font-bold text-gray-800">Proyecto ECO UAO</h3>
-          <p className="mt-2 text-sm leading-relaxed text-gray-500">
-            Sistema de monitoreo ambiental con computación física desarrollado en la
-            Universidad Autónoma de Occidente. Un nodo físico basado en{' '}
-            <span className="font-semibold text-gray-700">ESP32</span> con sensores{' '}
-            <span className="font-semibold text-gray-700">DHT22</span> (temperatura y
-            humedad) y <span className="font-semibold text-gray-700">LDR</span>{' '}
-            (iluminación) envía lecturas periódicas que se visualizan en este panel.
-          </p>
-          <div className="mt-4 grid grid-cols-3 gap-3 text-center">
-            <div className="rounded-xl bg-eco-pale/60 py-3">
-              <p className="text-xs font-semibold text-gray-500">Asignatura</p>
-              <p className="mt-1 text-sm font-bold text-gray-800">Computación Física</p>
-            </div>
-            <div className="rounded-xl bg-eco-pale/60 py-3">
-              <p className="text-xs font-semibold text-gray-500">Ubicación</p>
-              <p className="mt-1 text-sm font-bold text-gray-800">Cali, Colombia</p>
-            </div>
-            <div className="rounded-xl bg-eco-pale/60 py-3">
-              <p className="text-xs font-semibold text-gray-500">Institución</p>
-              <p className="mt-1 text-sm font-bold text-gray-800">UAO</p>
-            </div>
-          </div>
-        </Tarjeta>
-
-        <Tarjeta className="flex flex-col gap-4">
+        <Tarjeta className="flex flex-col gap-4 lg:col-span-1">
           <h3 className="text-base font-bold text-gray-800">Estado del nodo</h3>
           <div className="flex items-center gap-3">
             <div
