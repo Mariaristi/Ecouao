@@ -1,10 +1,10 @@
-import { BellIcon, MenuIcon, SearchIcon } from './icons'
+import { BellIcon, MenuIcon, SearchIcon } from './iconos'
 
-interface HeaderProps {
+interface EncabezadoProps {
   onMenuClick: () => void
 }
 
-export default function Header({ onMenuClick }: HeaderProps) {
+export default function Encabezado({ onMenuClick }: EncabezadoProps) {
   return (
     <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-black/5 bg-white/80 px-4 py-4 backdrop-blur lg:px-8">
       <button

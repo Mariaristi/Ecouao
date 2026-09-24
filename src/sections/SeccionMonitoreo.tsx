@@ -1,16 +1,28 @@
-import Card from '../components/Card'
-import Badge from '../components/Badge'
-import SensorChart from '../components/SensorChart'
-import { ThermometerIcon, DropletIcon, SunIcon } from '../components/icons'
-import { THRESHOLDS, alertLevelFor } from '../data/mockData'
+import Tarjeta from '../components/Tarjeta'
+import Insignia from '../components/Insignia'
+import Tooltip from '../components/Tooltip'
+import GraficoSensor from '../components/GraficoSensor'
+import { ThermometerIcon, DropletIcon, SunIcon } from '../components/iconos'
+import {
+  TOOLTIP_MEDICION,
+  UMBRALES,
+  alertaConUbicacion,
+  mensajeEstado,
+  nivelAlertaPara,
+  textoAyudaEstado,
+} from '../data/datosSimulados'
 import type { SensorReading } from '../types/sensor'
 
-interface MonitoreoSectionProps {
+interface SeccionMonitoreoProps {
   series: SensorReading[]
   latest: SensorReading
 }
 
-export default function MonitoreoSection({ series, latest }: MonitoreoSectionProps) {
+export default function SeccionMonitoreo({ series, latest }: SeccionMonitoreoProps) {
+  const nivelTemperatura = nivelAlertaPara('temperature', latest.temperature)
+  const nivelHumedad = nivelAlertaPara('humidity', latest.humidity)
+  const nivelLuz = nivelAlertaPara('light', latest.light)
+
   return (
     <section className="scroll-mt-24">
       <div className="mb-6 flex flex-col gap-1">
@@ -21,82 +33,101 @@ export default function MonitoreoSection({ series, latest }: MonitoreoSectionPro
       </div>
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
-        <Card>
+        <Tarjeta>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm font-semibold text-gray-600">
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-eco-pale text-eco-primary">
                 <ThermometerIcon width={16} height={16} />
               </span>
               Temperatura
+              <Tooltip text={TOOLTIP_MEDICION.temperature} />
             </div>
-            <Badge level={alertLevelFor('temperature', latest.temperature)} />
+            <Insignia level={nivelTemperatura} helpText={textoAyudaEstado('temperature', nivelTemperatura)} />
           </div>
           <p className="mt-4 text-3xl font-extrabold text-gray-800">
             {latest.temperature.toFixed(1)}
             <span className="ml-1 text-base font-semibold text-gray-400">°C</span>
           </p>
           <div className="mt-3">
-            <SensorChart
+            <GraficoSensor
               data={series}
               dataKey="temperature"
               color="#a9db2c"
               unit="°C"
-              thresholdMin={THRESHOLDS.temperature.min}
-              thresholdMax={THRESHOLDS.temperature.max}
+              thresholdMin={UMBRALES.temperature.min}
+              thresholdMax={UMBRALES.temperature.max}
             />
           </div>
-        </Card>
+          <p className="mt-2 text-xs text-gray-500">{mensajeEstado('temperature', nivelTemperatura)}</p>
+          {alertaConUbicacion(nivelTemperatura) && (
+            <p className="mt-1 text-xs font-semibold text-red-600">
+              {alertaConUbicacion(nivelTemperatura)}
+            </p>
+          )}
+        </Tarjeta>
 
-        <Card>
+        <Tarjeta>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm font-semibold text-gray-600">
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-eco-pale text-eco-primary">
                 <DropletIcon width={16} height={16} />
               </span>
               Humedad
+              <Tooltip text={TOOLTIP_MEDICION.humidity} />
             </div>
-            <Badge level={alertLevelFor('humidity', latest.humidity)} />
+            <Insignia level={nivelHumedad} helpText={textoAyudaEstado('humidity', nivelHumedad)} />
           </div>
           <p className="mt-4 text-3xl font-extrabold text-gray-800">
             {latest.humidity.toFixed(0)}
             <span className="ml-1 text-base font-semibold text-gray-400">%</span>
           </p>
           <div className="mt-3">
-            <SensorChart
+            <GraficoSensor
               data={series}
               dataKey="humidity"
               color="#4f9d3a"
               unit="%"
-              thresholdMin={THRESHOLDS.humidity.min}
-              thresholdMax={THRESHOLDS.humidity.max}
+              thresholdMin={UMBRALES.humidity.min}
+              thresholdMax={UMBRALES.humidity.max}
             />
           </div>
-        </Card>
+          <p className="mt-2 text-xs text-gray-500">{mensajeEstado('humidity', nivelHumedad)}</p>
+          {alertaConUbicacion(nivelHumedad) && (
+            <p className="mt-1 text-xs font-semibold text-red-600">
+              {alertaConUbicacion(nivelHumedad)}
+            </p>
+          )}
+        </Tarjeta>
 
-        <Card>
+        <Tarjeta>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm font-semibold text-gray-600">
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-eco-pale text-eco-primary">
                 <SunIcon width={16} height={16} />
               </span>
               Iluminación
+              <Tooltip text={TOOLTIP_MEDICION.light} />
             </div>
-            <Badge level={alertLevelFor('light', latest.light)} />
+            <Insignia level={nivelLuz} helpText={textoAyudaEstado('light', nivelLuz)} />
           </div>
           <p className="mt-4 text-3xl font-extrabold text-gray-800">
             {latest.light.toFixed(0)}
             <span className="ml-1 text-base font-semibold text-gray-400">lux</span>
           </p>
           <div className="mt-3">
-            <SensorChart
+            <GraficoSensor
               data={series}
               dataKey="light"
               color="#d4a72c"
               unit="lux"
-              thresholdMin={THRESHOLDS.light.min}
+              thresholdMin={UMBRALES.light.min}
             />
           </div>
-        </Card>
+          <p className="mt-2 text-xs text-gray-500">{mensajeEstado('light', nivelLuz)}</p>
+          {alertaConUbicacion(nivelLuz) && (
+            <p className="mt-1 text-xs font-semibold text-red-600">{alertaConUbicacion(nivelLuz)}</p>
+          )}
+        </Tarjeta>
       </div>
     </section>
   )

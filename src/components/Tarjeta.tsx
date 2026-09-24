@@ -1,6 +1,6 @@
 import type { PropsWithChildren } from 'react'
 
-export default function Card({
+export default function Tarjeta({
   children,
   className = '',
 }: PropsWithChildren<{ className?: string }>) {

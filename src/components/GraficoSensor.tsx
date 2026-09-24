@@ -10,7 +10,7 @@ import {
 } from 'recharts'
 import type { SensorReading, TimeRange } from '../types/sensor'
 
-interface SensorChartProps {
+interface GraficoSensorProps {
   data: SensorReading[]
   dataKey: keyof Omit<SensorReading, 'timestamp'>
   color: string
@@ -31,7 +31,7 @@ function formatTick(timestamp: string, range?: TimeRange) {
   return d.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })
 }
 
-export default function SensorChart({
+export default function GraficoSensor({
   data,
   dataKey,
   color,
@@ -39,7 +39,7 @@ export default function SensorChart({
   range,
   thresholdMin,
   thresholdMax,
-}: SensorChartProps) {
+}: GraficoSensorProps) {
   const gradientId = `gradient-${dataKey}`
 
   return (

@@ -1,5 +1,7 @@
 export type AlertLevel = 'ok' | 'warn' | 'danger'
 
+export type MetricKey = 'temperature' | 'humidity' | 'light'
+
 export interface SensorReading {
   timestamp: string
   temperature: number
@@ -19,4 +21,5 @@ export interface NodeStatus {
   connected: boolean
   lastUpdate: string
   nodeName: string
+  location: string
 }

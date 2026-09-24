@@ -1,4 +1,4 @@
-import { HomeIcon, ActivityIcon, HistoryIcon, LeafIcon, CloseIcon } from './icons'
+import { HomeIcon, ActivityIcon, HistoryIcon, LeafIcon, CloseIcon } from './iconos'
 
 export type SectionId = 'inicio' | 'monitoreo' | 'historial'
 
@@ -8,14 +8,14 @@ const NAV_ITEMS: { id: SectionId; label: string; icon: typeof HomeIcon }[] = [
   { id: 'historial', label: 'Historial', icon: HistoryIcon },
 ]
 
-interface SidebarProps {
+interface BarraLateralProps {
   active: SectionId
   onNavigate: (id: SectionId) => void
   open: boolean
   onClose: () => void
 }
 
-export default function Sidebar({ active, onNavigate, open, onClose }: SidebarProps) {
+export default function BarraLateral({ active, onNavigate, open, onClose }: BarraLateralProps) {
   return (
     <>
       {open && (

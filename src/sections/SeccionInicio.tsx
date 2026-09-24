@@ -1,16 +1,16 @@
-import Card from '../components/Card'
-import KpiCard from '../components/KpiCard'
-import Badge from '../components/Badge'
-import { ThermometerIcon, DropletIcon, SunIcon, WifiIcon } from '../components/icons'
-import { alertLevelFor } from '../data/mockData'
+import Tarjeta from '../components/Tarjeta'
+import TarjetaKpi from '../components/TarjetaKpi'
+import Insignia from '../components/Insignia'
+import { ThermometerIcon, DropletIcon, SunIcon, WifiIcon } from '../components/iconos'
+import { nivelAlertaPara } from '../data/datosSimulados'
 import type { NodeStatus, SensorReading } from '../types/sensor'
 
-interface InicioSectionProps {
+interface SeccionInicioProps {
   latest: SensorReading
   nodeStatus: NodeStatus
 }
 
-export default function InicioSection({ latest, nodeStatus }: InicioSectionProps) {
+export default function SeccionInicio({ latest, nodeStatus }: SeccionInicioProps) {
   return (
     <section className="scroll-mt-24">
       <div className="mb-6 flex flex-col gap-1">
@@ -21,34 +21,37 @@ export default function InicioSection({ latest, nodeStatus }: InicioSectionProps
       </div>
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-        <KpiCard
+        <TarjetaKpi
           label="Temperatura actual"
           value={latest.temperature.toFixed(1)}
           unit="°C"
           icon={<ThermometerIcon />}
-          level={alertLevelFor('temperature', latest.temperature)}
+          level={nivelAlertaPara('temperature', latest.temperature)}
+          metric="temperature"
           trend="+0.4°C"
         />
-        <KpiCard
+        <TarjetaKpi
           label="Humedad relativa"
           value={latest.humidity.toFixed(0)}
           unit="%"
           icon={<DropletIcon />}
-          level={alertLevelFor('humidity', latest.humidity)}
+          level={nivelAlertaPara('humidity', latest.humidity)}
+          metric="humidity"
           trend="-1.2%"
         />
-        <KpiCard
+        <TarjetaKpi
           label="Iluminación"
           value={latest.light.toFixed(0)}
           unit="lux"
           icon={<SunIcon />}
-          level={alertLevelFor('light', latest.light)}
+          level={nivelAlertaPara('light', latest.light)}
+          metric="light"
           trend="+18 lux"
         />
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
+        <Tarjeta className="lg:col-span-2">
           <h3 className="text-base font-bold text-gray-800">Proyecto ECO UAO</h3>
           <p className="mt-2 text-sm leading-relaxed text-gray-500">
             Sistema de monitoreo ambiental con computación física desarrollado en la
@@ -72,9 +75,9 @@ export default function InicioSection({ latest, nodeStatus }: InicioSectionProps
               <p className="mt-1 text-sm font-bold text-gray-800">UAO</p>
             </div>
           </div>
-        </Card>
+        </Tarjeta>
 
-        <Card className="flex flex-col gap-4">
+        <Tarjeta className="flex flex-col gap-4">
           <h3 className="text-base font-bold text-gray-800">Estado del nodo</h3>
           <div className="flex items-center gap-3">
             <div
@@ -86,8 +89,12 @@ export default function InicioSection({ latest, nodeStatus }: InicioSectionProps
             </div>
             <div>
               <p className="text-sm font-semibold text-gray-800">{nodeStatus.nodeName}</p>
-              <Badge level={nodeStatus.connected ? 'ok' : 'danger'} label={nodeStatus.connected ? 'Conectado' : 'Desconectado'} />
+              <Insignia level={nodeStatus.connected ? 'ok' : 'danger'} label={nodeStatus.connected ? 'Conectado' : 'Desconectado'} />
             </div>
+          </div>
+          <div className="rounded-xl bg-gray-50 px-4 py-3">
+            <p className="text-xs font-medium text-gray-400">Ubicación del nodo</p>
+            <p className="mt-1 text-sm font-semibold text-gray-700">📍 {nodeStatus.location}</p>
           </div>
           <div className="rounded-xl bg-gray-50 px-4 py-3">
             <p className="text-xs font-medium text-gray-400">Última actualización</p>
@@ -95,7 +102,7 @@ export default function InicioSection({ latest, nodeStatus }: InicioSectionProps
               {new Date(nodeStatus.lastUpdate).toLocaleString('es-CO')}
             </p>
           </div>
-        </Card>
+        </Tarjeta>
       </div>
     </section>
   )

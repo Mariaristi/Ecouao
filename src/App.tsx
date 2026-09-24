@@ -1,18 +1,24 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import Sidebar, { type SectionId } from './components/Sidebar'
-import Header from './components/Header'
-import InicioSection from './sections/InicioSection'
-import MonitoreoSection from './sections/MonitoreoSection'
-import HistorialSection from './sections/HistorialSection'
-import { generateSeries, generateSeriesForRange, latestReading, nextMockReading } from './data/mockData'
+import BarraLateral, { type SectionId } from './components/BarraLateral'
+import Encabezado from './components/Encabezado'
+import SeccionInicio from './sections/SeccionInicio'
+import SeccionMonitoreo from './sections/SeccionMonitoreo'
+import SeccionHistorial from './sections/SeccionHistorial'
+import {
+  UBICACION_NODO,
+  generarSerie,
+  generarSerieParaRango,
+  ultimaLectura,
+  siguienteLecturaSimulada,
+} from './data/datosSimulados'
 import type { NodeStatus, SensorReading, TimeRange } from './types/sensor'
 
-function exportToCsv(rows: SensorReading[]) {
-  const header = 'timestamp,temperature,humidity,light\n'
-  const body = rows
+function exportarCsv(filas: SensorReading[]) {
+  const encabezado = 'timestamp,temperature,humidity,light\n'
+  const cuerpo = filas
     .map((r) => `${r.timestamp},${r.temperature},${r.humidity},${r.light}`)
     .join('\n')
-  const blob = new Blob([header + body], { type: 'text/csv;charset=utf-8;' })
+  const blob = new Blob([encabezado + cuerpo], { type: 'text/csv;charset=utf-8;' })
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
@@ -22,69 +28,74 @@ function exportToCsv(rows: SensorReading[]) {
 }
 
 export default function App() {
-  const [liveSeries, setLiveSeries] = useState<SensorReading[]>(() => generateSeries(24, 5))
-  const [historyRange, setHistoryRange] = useState<TimeRange>('24h')
-  const [historySeries, setHistorySeries] = useState<SensorReading[]>(() =>
-    generateSeriesForRange('24h'),
+  const [serieEnVivo, setSerieEnVivo] = useState<SensorReading[]>(() => generarSerie(24, 5))
+  const [rangoHistorial, setRangoHistorial] = useState<TimeRange>('24h')
+  const [serieHistorial, setSerieHistorial] = useState<SensorReading[]>(() =>
+    generarSerieParaRango('24h'),
   )
-  const [active, setActive] = useState<SectionId>('inicio')
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [seccionActiva, setSeccionActiva] = useState<SectionId>('inicio')
+  const [sidebarAbierto, setSidebarAbierto] = useState(false)
 
-  const [nodeStatus] = useState<NodeStatus>({
+  const [estadoNodo] = useState<NodeStatus>({
     connected: true,
     lastUpdate: new Date().toISOString(),
     nodeName: 'ESP32 · Nodo 01',
+    location: UBICACION_NODO,
   })
 
   const mainRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setLiveSeries((prev) => {
-        const last = prev[prev.length - 1]
-        const next = nextMockReading(last)
-        return [...prev.slice(1), next]
+    const intervalo = setInterval(() => {
+      setSerieEnVivo((prev) => {
+        const anterior = prev[prev.length - 1]
+        const siguiente = siguienteLecturaSimulada(anterior)
+        return [...prev.slice(1), siguiente]
       })
     }, 3000)
-    return () => clearInterval(interval)
+    return () => clearInterval(intervalo)
   }, [])
 
   useEffect(() => {
-    setHistorySeries(generateSeriesForRange(historyRange))
-  }, [historyRange])
+    setSerieHistorial(generarSerieParaRango(rangoHistorial))
+  }, [rangoHistorial])
 
-  const latest = useMemo(() => latestReading(liveSeries), [liveSeries])
+  const ultima = useMemo(() => ultimaLectura(serieEnVivo), [serieEnVivo])
 
-  const handleNavigate = (id: SectionId) => {
-    setActive(id)
-    setSidebarOpen(false)
+  const handleNavegar = (id: SectionId) => {
+    setSeccionActiva(id)
+    setSidebarAbierto(false)
     mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
     <div className="flex min-h-screen bg-[#f6faf0]">
-      <Sidebar
-        active={active}
-        onNavigate={handleNavigate}
-        open={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
+      <BarraLateral
+        active={seccionActiva}
+        onNavigate={handleNavegar}
+        open={sidebarAbierto}
+        onClose={() => setSidebarAbierto(false)}
       />
 
       <div className="flex min-h-screen flex-1 flex-col">
-        <Header onMenuClick={() => setSidebarOpen(true)} />
+        <Encabezado onMenuClick={() => setSidebarAbierto(true)} />
 
         <main
           ref={mainRef}
           className="flex flex-1 flex-col gap-10 overflow-y-auto px-4 py-6 sm:px-6 lg:px-8"
         >
-          {active === 'inicio' && <InicioSection latest={latest} nodeStatus={nodeStatus} />}
-          {active === 'monitoreo' && <MonitoreoSection series={liveSeries} latest={latest} />}
-          {active === 'historial' && (
-            <HistorialSection
-              series={historySeries}
-              range={historyRange}
-              onRangeChange={setHistoryRange}
-              onExport={() => exportToCsv(historySeries)}
+          {seccionActiva === 'inicio' && (
+            <SeccionInicio latest={ultima} nodeStatus={estadoNodo} />
+          )}
+          {seccionActiva === 'monitoreo' && (
+            <SeccionMonitoreo series={serieEnVivo} latest={ultima} />
+          )}
+          {seccionActiva === 'historial' && (
+            <SeccionHistorial
+              series={serieHistorial}
+              range={rangoHistorial}
+              onRangeChange={setRangoHistorial}
+              onExport={() => exportarCsv(serieHistorial)}
             />
           )}
 
