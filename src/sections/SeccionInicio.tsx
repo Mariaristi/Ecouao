@@ -68,7 +68,7 @@ export default function SeccionInicio({ latest, nodeStatus }: SeccionInicioProps
           </div>
           <div className="rounded-xl bg-gray-50 px-4 py-3">
             <p className="text-xs font-medium text-gray-400">Ubicación del nodo</p>
-            <p className="mt-1 text-sm font-semibold text-gray-700">📍 {nodeStatus.location}</p>
+            <p className="mt-1 text-sm font-semibold text-gray-700">{nodeStatus.location}</p>
           </div>
           <div className="rounded-xl bg-gray-50 px-4 py-3">
             <p className="text-xs font-medium text-gray-400">Última actualización</p>

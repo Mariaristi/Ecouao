@@ -6,6 +6,7 @@ import SeccionMonitoreo from './sections/SeccionMonitoreo'
 import SeccionHistorial from './sections/SeccionHistorial'
 import {
   UBICACION_NODO,
+  generarNotificaciones,
   generarSerie,
   generarSerieParaRango,
   ultimaLectura,
@@ -61,6 +62,7 @@ export default function App() {
   }, [rangoHistorial])
 
   const ultima = useMemo(() => ultimaLectura(serieEnVivo), [serieEnVivo])
+  const notificaciones = useMemo(() => generarNotificaciones(ultima), [ultima])
 
   const handleNavegar = (id: SectionId) => {
     setSeccionActiva(id)
@@ -78,7 +80,11 @@ export default function App() {
       />
 
       <div className="flex min-h-screen flex-1 flex-col">
-        <Encabezado onMenuClick={() => setSidebarAbierto(true)} />
+        <Encabezado
+          onMenuClick={() => setSidebarAbierto(true)}
+          onNavigate={handleNavegar}
+          notifications={notificaciones}
+        />
 
         <main
           ref={mainRef}

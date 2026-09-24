@@ -72,14 +72,6 @@ export default function BarraLateral({ active, onNavigate, open, onClose }: Barr
             )
           })}
         </nav>
-
-        <div className="mt-auto rounded-2xl bg-eco-pale p-4">
-          <p className="text-xs font-bold uppercase tracking-wide text-green-800">Universidad</p>
-          <p className="mt-1 text-sm font-semibold text-gray-700">
-            Autónoma de Occidente
-          </p>
-          <p className="mt-1 text-xs text-gray-500">Cali, Valle del Cauca</p>
-        </div>
       </aside>
     </>
   )

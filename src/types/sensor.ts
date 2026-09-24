@@ -23,3 +23,11 @@ export interface NodeStatus {
   nodeName: string
   location: string
 }
+
+export interface Notification {
+  id: string
+  title: string
+  message: string
+  level: AlertLevel
+  timestamp: string
+}

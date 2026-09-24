@@ -1,4 +1,4 @@
-import type { AlertLevel, MetricKey, SensorReading, Thresholds, TimeRange } from '../types/sensor'
+import type { AlertLevel, MetricKey, Notification, SensorReading, Thresholds, TimeRange } from '../types/sensor'
 
 export const UMBRALES: Thresholds = {
   temperature: { min: 20, max: 26 },
@@ -28,8 +28,8 @@ export function mensajeEstado(metrica: MetricKey, nivel: AlertLevel): string {
 
 /** Texto de la alerta corta que aparece en las cards fuera de rango, con la ubicación del nodo. */
 export function alertaConUbicacion(nivel: AlertLevel): string | null {
-  if (nivel === 'warn') return `⚠️ Atención en ${UBICACION_NODO}`
-  if (nivel === 'danger') return `🔴 Fuera de rango en ${UBICACION_NODO}`
+  if (nivel === 'warn') return `Atención en ${UBICACION_NODO}`
+  if (nivel === 'danger') return `Fuera de rango en ${UBICACION_NODO}`
   return null
 }
 
@@ -94,6 +94,31 @@ export function siguienteLecturaSimulada(anterior: SensorReading): SensorReading
     humidity: Math.round((anterior.humidity + variacion() * 2) * 10) / 10,
     light: Math.round(anterior.light + (Math.random() - 0.5) * 40),
   }
+}
+
+const NOMBRE_METRICA: Record<MetricKey, string> = {
+  temperature: 'Temperatura',
+  humidity: 'Humedad',
+  light: 'Iluminación',
+}
+
+/** Genera notificaciones a partir de las métricas que están fuera de rango. */
+export function generarNotificaciones(lectura: SensorReading): Notification[] {
+  const metricas: MetricKey[] = ['temperature', 'humidity', 'light']
+
+  return metricas
+    .map((metrica) => {
+      const nivel = nivelAlertaPara(metrica, lectura[metrica])
+      return { metrica, nivel }
+    })
+    .filter(({ nivel }) => nivel !== 'ok')
+    .map(({ metrica, nivel }) => ({
+      id: `${metrica}-${lectura.timestamp}`,
+      title: NOMBRE_METRICA[metrica],
+      message: `${mensajeEstado(metrica, nivel)} · ${UBICACION_NODO}`,
+      level: nivel,
+      timestamp: lectura.timestamp,
+    }))
 }
 
 export function nivelAlertaPara(metrica: MetricKey, valor: number): AlertLevel {
