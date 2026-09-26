@@ -1,0 +1,4 @@
+venv/
+ecouao.db
+__pycache__/
+*.pyc

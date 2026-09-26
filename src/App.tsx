@@ -8,10 +8,9 @@ import {
   UBICACION_NODO,
   generarNotificaciones,
   generarSerie,
-  generarSerieParaRango,
   ultimaLectura,
-  siguienteLecturaSimulada,
 } from './data/datosSimulados'
+import { obtenerHistorial, obtenerHistorialPorRango } from './data/api'
 import type { NodeStatus, SensorReading, TimeRange } from './types/sensor'
 
 function exportarCsv(filas: SensorReading[]) {
@@ -31,9 +30,7 @@ function exportarCsv(filas: SensorReading[]) {
 export default function App() {
   const [serieEnVivo, setSerieEnVivo] = useState<SensorReading[]>(() => generarSerie(24, 5))
   const [rangoHistorial, setRangoHistorial] = useState<TimeRange>('24h')
-  const [serieHistorial, setSerieHistorial] = useState<SensorReading[]>(() =>
-    generarSerieParaRango('24h'),
-  )
+  const [serieHistorial, setSerieHistorial] = useState<SensorReading[]>([])
   const [seccionActiva, setSeccionActiva] = useState<SectionId>('inicio')
   const [sidebarAbierto, setSidebarAbierto] = useState(false)
 
@@ -47,18 +44,39 @@ export default function App() {
   const mainRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
-    const intervalo = setInterval(() => {
-      setSerieEnVivo((prev) => {
-        const anterior = prev[prev.length - 1]
-        const siguiente = siguienteLecturaSimulada(anterior)
-        return [...prev.slice(1), siguiente]
-      })
-    }, 3000)
+    async function actualizarDesdeBaackend() {
+      try {
+        const historial = await obtenerHistorial()
+        if (historial.length > 0) {
+          setSerieEnVivo((prev) => {
+            const ultimasVeinticuatro = historial.slice(-24)
+            return ultimasVeinticuatro.length > 0 ? ultimasVeinticuatro : prev
+          })
+        }
+      } catch (error) {
+        console.error('Error al consultar el backend:', error)
+      }
+    }
+
+    actualizarDesdeBaackend()
+    const intervalo = setInterval(actualizarDesdeBaackend, 3000)
     return () => clearInterval(intervalo)
   }, [])
 
   useEffect(() => {
-    setSerieHistorial(generarSerieParaRango(rangoHistorial))
+    let cancelado = false
+    async function cargarHistorial() {
+      try {
+        const datos = await obtenerHistorialPorRango(rangoHistorial)
+        if (!cancelado) setSerieHistorial(datos)
+      } catch (error) {
+        console.error('Error al cargar historial:', error)
+      }
+    }
+    cargarHistorial()
+    return () => {
+      cancelado = true
+    }
   }, [rangoHistorial])
 
   const ultima = useMemo(() => ultimaLectura(serieEnVivo), [serieEnVivo])
